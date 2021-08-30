@@ -1,0 +1,10 @@
+﻿REST constraints:
+	Uniform interface
+	Client Server separtion 
+	Stateless : State is transfered in request/response
+	Layered System : Clinet -> Outer layer
+	Cacheable
+	Code on demand (optional)
+
+URI:
+	noun/id/noun/id, noun = plural
