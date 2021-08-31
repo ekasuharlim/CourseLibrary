@@ -13,28 +13,22 @@ namespace CourseLibrary.API.Controllers
     {
         private readonly ICourseLibraryRepository repo;
 
-        public AuthorsController(ICourseLibraryRepository repo) 
+        public AuthorsController(ICourseLibraryRepository repo)
         {
             this.repo = repo;
         }
         [HttpGet]
-        public IActionResult GetAuthors() 
+        public IActionResult GetAuthors()
         {
-            return  new JsonResult(this.repo.GetAuthors());
+            return new JsonResult(this.repo.GetAuthors());
         }
 
         [HttpGet("{authorId}")]
         public IActionResult GetAuthors(Guid authorId)
         {
-            var author = this.repo.GetAuthors().FirstOrDefault(a => a.Id == authorId);
-            if (author != null)
-            {
-                return Ok(author);
-            }
-            else 
-            {
-                return NotFound();
-            }
+            var author = this.repo.GetAuthor(authorId);
+            if (author == null) return NotFound();
+            return Ok(author);
         }
 
     }

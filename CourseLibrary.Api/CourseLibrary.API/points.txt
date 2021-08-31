@@ -8,3 +8,9 @@
 
 URI:
 	noun/id/noun/id, noun = plural
+
+Error Codes return
+	200
+	400
+	500
+
