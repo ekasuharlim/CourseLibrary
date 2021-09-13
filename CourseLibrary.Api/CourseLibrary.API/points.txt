@@ -14,3 +14,13 @@ Error Codes return
 	400
 	500
 
+Fixing getting resource:
+	Use ActionResult<T>
+	Seperate repo and dto (model)
+	Use automapper
+
+Create child request to course based on author 
+Handling fault
+Supporting HttpHead
+
+
