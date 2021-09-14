@@ -16,5 +16,7 @@ namespace CourseLibrary.API.Models
 
         public string MainCategory { get; set; }
 
+        public ICollection<CourseDto> Courses { get; set; }
+
     }
 }

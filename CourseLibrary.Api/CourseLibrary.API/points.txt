@@ -19,7 +19,9 @@ Fixing getting resource:
 	Seperate repo and dto (model)
 	Use automapper
 
-Create child request to course based on author 
+Parent/Child relation
+	create child request to course based on author 
+
 Handling fault
 Supporting HttpHead
 

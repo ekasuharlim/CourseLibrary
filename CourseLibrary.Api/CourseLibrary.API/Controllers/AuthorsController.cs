@@ -34,6 +34,7 @@ namespace CourseLibrary.API.Controllers
         public ActionResult<AuthorDto> GetAuthor(Guid authorId)
         {
             var author = this.repo.GetAuthor(authorId);
+            Console.WriteLine(author.Courses.Count());
             if (author == null) return NotFound();
             return Ok(mapper.Map<Author, AuthorDto>(author));
             
