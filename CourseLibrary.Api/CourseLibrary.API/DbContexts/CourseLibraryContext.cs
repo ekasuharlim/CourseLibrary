@@ -24,7 +24,7 @@ namespace CourseLibrary.API.DbContexts
                     FirstName = "Berry",
                     LastName = "Griffin Beak Eldritch",
                     DateOfBirth = new DateTime(1650, 7, 23),
-                    MainCategory = "Ships"
+                    MainCategory = "Ships",
                 },
                 new Author()
                 {

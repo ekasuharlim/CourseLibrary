@@ -23,6 +23,7 @@ namespace CourseLibrary.API.Controllers
         }
 
         [HttpGet]
+        [HttpHead]
         public ActionResult<IEnumerable<CourseDto>> GetCoursesForAuthor(Guid authorId) {
             var authorFromRepo = this.repo.GetAuthor(authorId);
 
@@ -33,6 +34,7 @@ namespace CourseLibrary.API.Controllers
             return Ok(this.mapper.Map<IEnumerable<Course>, IEnumerable<CourseDto>>(coursesFromRepo));
         }
         [HttpGet("{courseId}")]
+        [HttpHead("{courseId}")]
         public ActionResult<CourseDto> GetCourseForAuthor(Guid authorId, Guid courseId)
         {
             var authorFromRepo = this.repo.GetAuthor(authorId);

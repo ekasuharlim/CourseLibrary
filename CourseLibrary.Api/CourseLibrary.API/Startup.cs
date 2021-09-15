@@ -8,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
+using System.Threading.Tasks;
 
 namespace CourseLibrary.API
 {
@@ -48,6 +49,13 @@ namespace CourseLibrary.API
             {
                 app.UseDeveloperExceptionPage();
             }
+            else 
+            {
+                app.UseExceptionHandler(appBuilder =>
+                {
+                    appBuilder.Run(ExceptionHandler);
+                });
+            }
 
             app.UseRouting();
 
@@ -57,6 +65,12 @@ namespace CourseLibrary.API
             {
                 endpoints.MapControllers();
             });
+        }
+
+        private async  Task ExceptionHandler(HttpContext context)
+        {
+            context.Response.StatusCode = 500;
+            await context.Response.WriteAsync("error at server");
         }
     }
 }
