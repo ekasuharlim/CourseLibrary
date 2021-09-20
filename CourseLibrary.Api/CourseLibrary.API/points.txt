@@ -14,15 +14,26 @@ Error Codes return
 	400
 	500
 
-Fixing getting resource:
+Creating Controller
+	Inherit from ControllerBase, add [ApiController] attribute
+Getting Resource 
 	Use ActionResult<T>
 	Seperate repo and dto (model)
 	Use automapper
 
-Parent/Child relation
-	create child request to course based on author 
+	Parent/Child relation
+		create child request to course based on author 
 
-Handling fault
-Supporting HttpHead
+	Handling fault
+		Exception handling defined in the pipeline by creating termination middlware (addExceptionHandler)
+		Supporting HttpHead
+
+	Searching Filtering
+		Done by using querystring
+		Parameters binding, by default it using the parameter datatype and its matching uri
+		ComplexType (class) be default it's [FormBody]
+
+Creating Resource
+	Dto object must be created for each operation
 
 

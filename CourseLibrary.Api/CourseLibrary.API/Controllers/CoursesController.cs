@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 
 namespace CourseLibrary.API.Controllers
 {
+    [ApiController]
     [Route("/api/authors/{authorid}/courses")]
     public class CoursesController : ControllerBase
     {
@@ -53,6 +54,20 @@ namespace CourseLibrary.API.Controllers
             return Ok(this.mapper.Map<Course, CourseDto>(courseFromRepo));
         }
 
+        [HttpPost]
+        public ActionResult<CourseDto> CreateCourseForAuthor(Guid authorId, CourseDtoForCreate courseToCreate) 
+        {
+            if (!this.repo.AuthorExists(authorId)) 
+            {
+                return BadRequest("Invalid author");
+            }
+
+            var courseToSave = this.mapper.Map<CourseDtoForCreate, Course>(courseToCreate);
+            this.repo.AddCourse(authorId, courseToSave);
+            this.repo.Save();
+
+            return Ok(this.mapper.Map<Course, CourseDto>(courseToSave));
+        }
 
     }
 }
