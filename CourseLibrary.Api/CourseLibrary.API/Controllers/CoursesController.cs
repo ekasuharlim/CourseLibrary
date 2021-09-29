@@ -23,7 +23,7 @@ namespace CourseLibrary.API.Controllers
             this.mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetCourses")]
         [HttpHead]
         public ActionResult<IEnumerable<CourseDto>> GetCoursesForAuthor(Guid authorId) {
             var authorFromRepo = this.repo.GetAuthor(authorId);
@@ -66,7 +66,7 @@ namespace CourseLibrary.API.Controllers
             this.repo.AddCourse(authorId, courseToSave);
             this.repo.Save();
 
-            return Ok(this.mapper.Map<Course, CourseDto>(courseToSave));
+            return CreatedAtRoute("GetCourses",new { authorId = authorId}, this.mapper.Map<Course, CourseDto>(courseToSave));
         }
 
     }

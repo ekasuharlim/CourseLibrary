@@ -41,3 +41,9 @@ Parameters binding
 		Depends how you want to get the values from, query string, header, route 
 
 
+Validationg Input
+	Multipleways :
+		Implement IValidateable in dto class
+		Create custom Data annotation
+		Data annotation will be run first before the IValidateable method
+
