@@ -11,16 +11,10 @@ namespace CourseLibrary.API.ValidationAttributes
     public class CourseTitleMustHaveAuthorName : ValidationAttribute
     {
         private readonly string authorName;
-        private readonly string errorMessage;
 
-        public CourseTitleMustHaveAuthorName(string authorName) : base()
+        public CourseTitleMustHaveAuthorName(string authorName) : base("Title must contain author : ")
         {
             this.authorName = authorName;
-        }
-        public CourseTitleMustHaveAuthorName(string authorName, string errorMessage = "Title must contain author") : base(errorMessage)
-        {
-            this.authorName = authorName;
-            this.errorMessage = errorMessage;
         }
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
@@ -28,7 +22,7 @@ namespace CourseLibrary.API.ValidationAttributes
             var course = (CourseDtoForCreate) validationContext.ObjectInstance;
             if (!course.Title.Contains(this.authorName))
             {
-                return new ValidationResult(this.errorMessage,new string[] { "CourseDtoForCreate" });
+                return new ValidationResult(this.ErrorMessageString + this.authorName,new string[] { "CourseDtoForCreate" });
             }
             return ValidationResult.Success;
         }

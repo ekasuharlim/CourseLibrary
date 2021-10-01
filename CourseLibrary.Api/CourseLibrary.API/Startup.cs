@@ -3,6 +3,9 @@ using CourseLibrary.API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,7 +30,40 @@ namespace CourseLibrary.API
             services.AddControllers(opt =>
             {
                 opt.ReturnHttpNotAcceptable = true;
-            }).AddXmlDataContractSerializerFormatters();
+            }).AddXmlDataContractSerializerFormatters()
+            .ConfigureApiBehaviorOptions(options =>
+              options.InvalidModelStateResponseFactory = context =>
+              {
+                  //main functionis to return custom ProblemDetails object
+                  var problemDetailsFactory = context.HttpContext.RequestServices.GetRequiredService<ProblemDetailsFactory>();
+                  var problemDetail = problemDetailsFactory.CreateValidationProblemDetails(context.HttpContext, context.ModelState);
+
+                  problemDetail.Detail = "See the errors field for details.";
+                  problemDetail.Instance = context.HttpContext.Request.Path;
+
+                  var actionExecutingContext = context as ActionExecutingContext;
+
+                  if (context.ModelState.ErrorCount > 0 && actionExecutingContext?.ActionArguments.Count == context.ActionDescriptor.Parameters.Count)
+                  {
+                      problemDetail.Type = "https://something";
+                      problemDetail.Status = StatusCodes.Status422UnprocessableEntity;
+                      problemDetail.Title = "One or more validation errors occured";
+
+                      return new UnprocessableEntityObjectResult(problemDetail)
+                      {
+                          ContentTypes = { "application/problem+json" }
+                      };
+                  }
+
+                  problemDetail.Status = StatusCodes.Status400BadRequest;
+                  problemDetail.Title = "One or more errors on input occured";
+                  return new BadRequestObjectResult(problemDetail)
+                  {
+                      ContentTypes = { "application/problem+json" }
+                  };
+
+              }
+                );
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -49,7 +85,7 @@ namespace CourseLibrary.API
             {
                 app.UseDeveloperExceptionPage();
             }
-            else 
+            else
             {
                 app.UseExceptionHandler(appBuilder =>
                 {
@@ -67,7 +103,7 @@ namespace CourseLibrary.API
             });
         }
 
-        private async  Task ExceptionHandler(HttpContext context)
+        private async Task ExceptionHandler(HttpContext context)
         {
             context.Response.StatusCode = 500;
             await context.Response.WriteAsync("error at server");

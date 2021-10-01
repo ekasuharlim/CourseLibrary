@@ -47,3 +47,5 @@ Validationg Input
 		Create custom Data annotation
 		Data annotation will be run first before the IValidateable method
 
+Returning Validation Error
+	Based on RFC7807 but not all info are available
