@@ -19,7 +19,7 @@ namespace CourseLibrary.API.ValidationAttributes
 
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
-            var course = (CourseDtoForCreate) validationContext.ObjectInstance;
+            var course = (CourseDtoForManipulation) validationContext.ObjectInstance;
             if (!course.Title.Contains(this.authorName))
             {
                 return new ValidationResult(this.ErrorMessageString + this.authorName,new string[] { "CourseDtoForCreate" });

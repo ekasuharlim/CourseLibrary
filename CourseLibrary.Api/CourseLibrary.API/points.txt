@@ -49,3 +49,9 @@ Validationg Input
 
 Returning Validation Error
 	Based on RFC7807 but not all info are available
+
+Updating Resource
+PUT - Full
+Validation can be different between creation and updating	
+	Data annotation if overide it still keeps  the parent method data annotation
+PATCH - Partial

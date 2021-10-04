@@ -59,7 +59,7 @@ namespace CourseLibrary.API.Controllers
         {
             if (!this.repo.AuthorExists(authorId)) 
             {
-                return BadRequest("Invalid author");
+                return NotFound("Invalid author");
             }
 
             var courseToSave = this.mapper.Map<CourseDtoForCreate, Course>(courseToCreate);
@@ -67,6 +67,26 @@ namespace CourseLibrary.API.Controllers
             this.repo.Save();
 
             return CreatedAtRoute("GetCourses",new { authorId = authorId}, this.mapper.Map<Course, CourseDto>(courseToSave));
+        }
+
+        [HttpPut("{courseId}")]
+        public ActionResult UpdateCourseForAuthor(Guid authorId, Guid courseId, CourseDtoForUpdate courseToUpdate) 
+        {
+            if (!this.repo.AuthorExists(authorId))
+            {
+                return NotFound("Invalid author");
+            }
+
+            var courseForAuthorFromRepo = this.repo.GetCourse(authorId, courseId);
+            if (courseForAuthorFromRepo == null) 
+            {
+                return NotFound("Invalid course");
+            }
+            this.mapper.Map<CourseDtoForUpdate, Course>(courseToUpdate, courseForAuthorFromRepo);            
+            this.repo.UpdateCourse(courseForAuthorFromRepo);
+            this.repo.Save();
+            return NoContent();
+
         }
 
     }
