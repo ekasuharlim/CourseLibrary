@@ -34,7 +34,7 @@ namespace CourseLibrary.API.Controllers
             var coursesFromRepo = this.repo.GetCourses(authorId);
             return Ok(this.mapper.Map<IEnumerable<Course>, IEnumerable<CourseDto>>(coursesFromRepo));
         }
-        [HttpGet("{courseId}")]
+        [HttpGet("{courseId}",Name = "GetCourseForAuthor")]
         [HttpHead("{courseId}")]
         public ActionResult<CourseDto> GetCourseForAuthor(Guid authorId, Guid courseId)
         {
@@ -80,8 +80,14 @@ namespace CourseLibrary.API.Controllers
             var courseForAuthorFromRepo = this.repo.GetCourse(authorId, courseId);
             if (courseForAuthorFromRepo == null) 
             {
-                return NotFound("Invalid course");
+                var courseToAdd = this.mapper.Map<CourseDtoForUpdate, Course>(courseToUpdate);
+                courseToAdd.Id = courseId;
+                this.repo.AddCourse(authorId, courseToAdd);
+                this.repo.Save();
+                var courseToReturn = this.mapper.Map<Course, CourseDto>(courseToAdd);
+                return CreatedAtRoute("GetCourseForAuthor", new { authorId = authorId, courseId = courseId }, courseToReturn);
             }
+
             this.mapper.Map<CourseDtoForUpdate, Course>(courseToUpdate, courseForAuthorFromRepo);            
             this.repo.UpdateCourse(courseForAuthorFromRepo);
             this.repo.Save();
