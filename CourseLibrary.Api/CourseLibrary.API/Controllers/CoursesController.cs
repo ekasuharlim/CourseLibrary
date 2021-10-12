@@ -2,7 +2,12 @@
 using CourseLibrary.API.Entities;
 using CourseLibrary.API.Models;
 using CourseLibrary.API.Services;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,10 +68,11 @@ namespace CourseLibrary.API.Controllers
             }
 
             var courseToSave = this.mapper.Map<CourseDtoForCreate, Course>(courseToCreate);
+
             this.repo.AddCourse(authorId, courseToSave);
             this.repo.Save();
 
-            return CreatedAtRoute("GetCourses",new { authorId = authorId}, this.mapper.Map<Course, CourseDto>(courseToSave));
+            return CreatedAtRoute("GetCourseForAuthor", new { authorId = authorId, courseId = courseToSave.Id }, this.mapper.Map<Course, CourseDto>(courseToSave));
         }
 
         [HttpPut("{courseId}")]
@@ -93,6 +99,58 @@ namespace CourseLibrary.API.Controllers
             this.repo.Save();
             return NoContent();
 
+        }
+
+        [HttpPatch("{courseId}")]
+        public ActionResult UpdatePartialCourseForAuthor(Guid authorId, Guid courseId, JsonPatchDocument<CourseDtoForUpdate> patchDocument) 
+        {
+            if (!this.repo.AuthorExists(authorId))
+            {
+                return NotFound("Invalid author");
+            }
+
+            var courseForAuthorFromRepo = this.repo.GetCourse(authorId, courseId);
+            if (courseForAuthorFromRepo == null)
+            {
+                return NotFound();
+            }
+            var courseToPatch = this.mapper.Map<Course, CourseDtoForUpdate>(courseForAuthorFromRepo);
+
+            
+            patchDocument.ApplyTo(courseToPatch,ModelState);
+            if (!TryValidateModel(courseToPatch)) 
+            {
+                return ValidationProblem(ModelState);
+            }
+
+            this.mapper.Map<CourseDtoForUpdate, Course>(courseToPatch, courseForAuthorFromRepo);
+            this.repo.UpdateCourse(courseForAuthorFromRepo);
+            this.repo.Save();
+
+            return NoContent();
+        }
+
+        [HttpDelete("{courseId}")]
+        public ActionResult DeleteCourseFromAuthor(Guid authorId, Guid courseId) 
+        {
+            if (!this.repo.AuthorExists(authorId))
+            {
+                return NotFound("Invalid author");
+            }
+
+            var courseForAuthorFromRepo = this.repo.GetCourse(authorId, courseId);
+            if (courseForAuthorFromRepo == null)
+            {
+                return NotFound();
+            }
+            this.repo.DeleteCourse(courseForAuthorFromRepo);
+            this.repo.Save();
+            return NoContent();
+        }
+        public override ActionResult ValidationProblem([ActionResultObjectValue] ModelStateDictionary modelStateDictionary)
+        {
+            var options = HttpContext.RequestServices.GetRequiredService<IOptions<ApiBehaviorOptions>>();
+            return  (ActionResult)options.Value.InvalidModelStateResponseFactory(ControllerContext);
         }
 
     }

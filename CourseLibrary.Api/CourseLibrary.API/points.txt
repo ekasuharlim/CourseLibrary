@@ -56,3 +56,9 @@ Validation can be different between creation and updating
 	Data annotation if overide it still keeps  the parent method data annotation
 	Upserting 
 PATCH - Partial
+	using RFC 6902 (JSON Patch) structure
+	has 6 operations : add, remove, replace, copy, move, test
+		struct: 
+			op
+			path
+			value
